@@ -1,6 +1,4 @@
-from pathlib import Path
-
-html = r'''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -1115,10 +1113,3 @@ html = r'''<!DOCTYPE html>
   </script>
 </body>
 </html>
-'''
-
-path = Path("/mnt/data/index_matrices_interactivo.html")
-path.write_text(html, encoding="utf-8")
-
-print(f"Archivo creado: {path}")
-print(f"Tamaño: {path.stat().st_size} bytes")
