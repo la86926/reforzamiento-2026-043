@@ -1,1115 +1,467 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f6faf7" />
-  <title>Fila por columna · Multiplicación de matrices</title>
-
-  <style>
-    :root{
-      --fondo:#f4f7f5;
-      --panel:rgba(255,255,255,.86);
-      --texto:#17201b;
-      --secundario:#657269;
-      --borde:rgba(25,60,37,.12);
-      --verde:#d7f0da;
-      --verde-fuerte:#4c9a62;
-      --verde-oscuro:#28613a;
-      --resultado:#fff0c7;
-      --resultado-fuerte:#c48916;
-      --sombra:0 24px 70px rgba(25,65,38,.12);
-      --radio:28px;
-    }
-
-    *{box-sizing:border-box}
-
-    html{scroll-behavior:smooth}
-
-    body{
-      margin:0;
-      min-height:100vh;
-      font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display",
-                  "Segoe UI",sans-serif;
-      color:var(--texto);
-      background:
-        radial-gradient(circle at 15% 10%, rgba(215,240,218,.8), transparent 28rem),
-        radial-gradient(circle at 90% 85%, rgba(255,240,199,.65), transparent 30rem),
-        var(--fondo);
-    }
-
-    button,input{font:inherit}
-
-    button{
-      border:0;
-      cursor:pointer;
-      -webkit-tap-highlight-color:transparent;
-    }
-
-    .app{
-      width:min(1180px,calc(100% - 32px));
-      margin:0 auto;
-      padding:34px 0 54px;
-    }
-
-    .hero{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:24px;
-      margin-bottom:22px;
-    }
-
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      margin-bottom:10px;
-      padding:8px 12px;
-      border:1px solid var(--borde);
-      border-radius:999px;
-      color:var(--verde-oscuro);
-      background:rgba(255,255,255,.72);
-      font-size:.83rem;
-      font-weight:750;
-      letter-spacing:.02em;
-    }
-
-    .eyebrow::before{
-      content:"";
-      width:9px;
-      height:9px;
-      border-radius:50%;
-      background:var(--verde-fuerte);
-      box-shadow:0 0 0 5px rgba(76,154,98,.14);
-    }
-
-    h1{
-      margin:0;
-      max-width:780px;
-      font-size:clamp(2rem,4vw,4rem);
-      line-height:.98;
-      letter-spacing:-.055em;
-    }
-
-    .subtitle{
-      max-width:760px;
-      margin:16px 0 0;
-      color:var(--secundario);
-      font-size:clamp(1rem,1.7vw,1.15rem);
-      line-height:1.6;
-    }
-
-    .mode-switch{
-      display:flex;
-      padding:5px;
-      border:1px solid var(--borde);
-      border-radius:16px;
-      background:rgba(255,255,255,.78);
-      box-shadow:0 8px 24px rgba(20,50,29,.06);
-      flex-shrink:0;
-    }
-
-    .mode-btn{
-      padding:10px 14px;
-      border-radius:12px;
-      color:var(--secundario);
-      background:transparent;
-      font-weight:750;
-      transition:.2s ease;
-    }
-
-    .mode-btn.active{
-      color:#fff;
-      background:var(--verde-oscuro);
-      box-shadow:0 7px 18px rgba(40,97,58,.24);
-    }
-
-    .panel{
-      border:1px solid var(--borde);
-      border-radius:var(--radio);
-      background:var(--panel);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      box-shadow:var(--sombra);
-      overflow:hidden;
-    }
-
-    .topbar{
-      display:grid;
-      grid-template-columns:1fr auto;
-      gap:20px;
-      align-items:center;
-      padding:18px 22px;
-      border-bottom:1px solid var(--borde);
-      background:rgba(255,255,255,.56);
-    }
-
-    .mantra{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      font-weight:800;
-      color:var(--verde-oscuro);
-    }
-
-    .pulse-dot{
-      width:12px;
-      height:12px;
-      border-radius:50%;
-      background:var(--verde-fuerte);
-      animation:pulse 1.7s infinite;
-    }
-
-    @keyframes pulse{
-      0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(76,154,98,.34)}
-      50%{transform:scale(1.08);box-shadow:0 0 0 9px rgba(76,154,98,0)}
-    }
-
-    .progress{
-      display:flex;
-      align-items:center;
-      gap:7px;
-    }
-
-    .progress span{
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      background:#dfe6e1;
-      transition:.3s ease;
-    }
-
-    .progress span.done{background:var(--verde-fuerte)}
-    .progress span.current{
-      width:28px;
-      border-radius:999px;
-      background:var(--verde-oscuro);
-    }
-
-    .stage{
-      padding:32px;
-    }
-
-    .instruction{
-      display:grid;
-      grid-template-columns:68px 1fr;
-      gap:16px;
-      align-items:center;
-      max-width:760px;
-      margin:0 auto 28px;
-      padding:16px;
-      border:1px solid var(--borde);
-      border-radius:20px;
-      background:rgba(247,251,248,.86);
-    }
-
-    .instruction-number{
-      display:grid;
-      place-items:center;
-      width:52px;
-      height:52px;
-      border-radius:16px;
-      color:#fff;
-      background:var(--verde-oscuro);
-      font-weight:900;
-      font-size:1.2rem;
-    }
-
-    .instruction h2{
-      margin:0 0 4px;
-      font-size:1.08rem;
-      letter-spacing:-.02em;
-    }
-
-    .instruction p{
-      margin:0;
-      color:var(--secundario);
-      line-height:1.45;
-    }
-
-    .matrix-zone{
-      display:grid;
-      grid-template-columns:1fr auto 1fr auto 1fr;
-      align-items:center;
-      justify-items:center;
-      gap:22px;
-      max-width:980px;
-      margin:0 auto;
-    }
-
-    .symbol{
-      color:#7a867f;
-      font-size:2rem;
-      font-weight:700;
-    }
-
-    .matrix-wrap{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:10px;
-    }
-
-    .matrix-label{
-      font-weight:850;
-      color:#3b493f;
-    }
-
-    .matrix{
-      position:relative;
-      display:grid;
-      grid-template-columns:repeat(2,78px);
-      gap:9px;
-      padding:12px 18px;
-    }
-
-    .matrix::before,
-    .matrix::after{
-      content:"";
-      position:absolute;
-      top:0;
-      bottom:0;
-      width:12px;
-      border-top:3px solid #26332a;
-      border-bottom:3px solid #26332a;
-    }
-
-    .matrix::before{
-      left:0;
-      border-left:3px solid #26332a;
-      border-radius:7px 0 0 7px;
-    }
-
-    .matrix::after{
-      right:0;
-      border-right:3px solid #26332a;
-      border-radius:0 7px 7px 0;
-    }
-
-    .cell{
-      position:relative;
-      display:grid;
-      place-items:center;
-      width:78px;
-      height:64px;
-      border-radius:14px;
-      font-size:1.35rem;
-      font-weight:850;
-      transition:
-        transform .28s ease,
-        background .28s ease,
-        box-shadow .28s ease,
-        color .28s ease,
-        opacity .28s ease;
-      isolation:isolate;
-    }
-
-    .cell::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius:inherit;
-      border:2px solid transparent;
-      pointer-events:none;
-    }
-
-    .cell.dimmed{
-      opacity:.42;
-      transform:scale(.96);
-    }
-
-    .cell.row-active,
-    .cell.col-active{
-      background:rgba(215,240,218,.78);
-      color:var(--verde-oscuro);
-      transform:translateY(-2px) scale(1.04);
-      box-shadow:0 12px 25px rgba(76,154,98,.17);
-    }
-
-    .cell.row-active::after,
-    .cell.col-active::after{
-      border-color:rgba(76,154,98,.45);
-    }
-
-    .cell.result-active{
-      background:rgba(255,240,199,.86);
-      color:#76530e;
-      transform:scale(1.06);
-      box-shadow:0 12px 25px rgba(196,137,22,.18);
-    }
-
-    .cell.result-active::after{
-      border-color:rgba(196,137,22,.48);
-    }
-
-    .pairing{
-      width:min(820px,100%);
-      margin:34px auto 0;
-      padding:22px;
-      border:1px solid var(--borde);
-      border-radius:24px;
-      background:rgba(255,255,255,.7);
-    }
-
-    .pairing-title{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:14px;
-      margin-bottom:16px;
-    }
-
-    .pairing-title strong{
-      font-size:1rem;
-      color:#354139;
-    }
-
-    .cue{
-      padding:6px 10px;
-      border-radius:999px;
-      color:var(--verde-oscuro);
-      background:var(--verde);
-      font-size:.78rem;
-      font-weight:850;
-    }
-
-    .chips{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      flex-wrap:wrap;
-      gap:10px;
-      min-height:58px;
-    }
-
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:9px;
-      padding:10px 14px;
-      border-radius:14px;
-      background:#f7faf8;
-      border:1px solid var(--borde);
-      font-size:1.12rem;
-      font-weight:850;
-      animation:enter .38s ease both;
-    }
-
-    .chip:nth-child(2){animation-delay:.08s}
-
-    .chip .a,
-    .chip .b{
-      display:grid;
-      place-items:center;
-      min-width:30px;
-      height:30px;
-      padding:0 7px;
-      border-radius:9px;
-      background:var(--verde);
-      color:var(--verde-oscuro);
-    }
-
-    .plus{
-      color:#77827b;
-      font-size:1.4rem;
-      font-weight:900;
-    }
-
-    @keyframes enter{
-      from{opacity:0;transform:translateY(8px) scale(.95)}
-      to{opacity:1;transform:none}
-    }
-
-    .equation{
-      margin-top:16px;
-      text-align:center;
-      font-size:clamp(1.2rem,2.5vw,1.7rem);
-      font-weight:900;
-      letter-spacing:-.02em;
-    }
-
-    .equation .answer{
-      display:inline-grid;
-      place-items:center;
-      min-width:48px;
-      padding:3px 9px;
-      border-radius:10px;
-      color:#76530e;
-      background:var(--resultado);
-    }
-
-    .challenge{
-      display:none;
-      width:min(700px,100%);
-      margin:24px auto 0;
-      padding:20px;
-      border:1px dashed rgba(40,97,58,.32);
-      border-radius:20px;
-      background:rgba(247,251,248,.75);
-    }
-
-    .challenge.visible{display:block}
-
-    .challenge p{
-      margin:0 0 12px;
-      color:var(--secundario);
-      text-align:center;
-    }
-
-    .answer-row{
-      display:flex;
-      justify-content:center;
-      gap:10px;
-    }
-
-    .answer-input{
-      width:140px;
-      padding:13px 14px;
-      border:1px solid var(--borde);
-      border-radius:14px;
-      outline:none;
-      text-align:center;
-      font-weight:850;
-      background:#fff;
-      transition:.2s ease;
-    }
-
-    .answer-input:focus{
-      border-color:var(--verde-fuerte);
-      box-shadow:0 0 0 4px rgba(76,154,98,.12);
-    }
-
-    .answer-input.correct{
-      border-color:var(--verde-fuerte);
-      background:#eff9f1;
-    }
-
-    .answer-input.wrong{
-      border-color:#d87575;
-      background:#fff3f3;
-      animation:shake .28s linear;
-    }
-
-    @keyframes shake{
-      0%,100%{transform:translateX(0)}
-      25%{transform:translateX(-5px)}
-      75%{transform:translateX(5px)}
-    }
-
-    .feedback{
-      min-height:24px;
-      margin-top:10px;
-      text-align:center;
-      font-weight:800;
-      color:var(--verde-oscuro);
-    }
-
-    .controls{
-      display:flex;
-      justify-content:center;
-      flex-wrap:wrap;
-      gap:10px;
-      padding:20px 24px 26px;
-      border-top:1px solid var(--borde);
-      background:rgba(255,255,255,.48);
-    }
-
-    .btn{
-      min-width:128px;
-      padding:13px 18px;
-      border-radius:14px;
-      font-weight:850;
-      transition:.2s ease;
-    }
-
-    .btn:hover{transform:translateY(-2px)}
-    .btn:active{transform:translateY(0)}
-
-    .btn-primary{
-      color:#fff;
-      background:var(--verde-oscuro);
-      box-shadow:0 10px 24px rgba(40,97,58,.2);
-    }
-
-    .btn-secondary{
-      color:var(--verde-oscuro);
-      background:var(--verde);
-    }
-
-    .btn-ghost{
-      color:#536158;
-      background:#eef2ef;
-    }
-
-    .btn:disabled{
-      opacity:.45;
-      cursor:not-allowed;
-      transform:none;
-    }
-
-    .why{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:14px;
-      margin-top:18px;
-    }
-
-    .why article{
-      padding:18px;
-      border:1px solid var(--borde);
-      border-radius:20px;
-      background:rgba(255,255,255,.62);
-    }
-
-    .why strong{
-      display:block;
-      margin-bottom:7px;
-      color:var(--verde-oscuro);
-    }
-
-    .why p{
-      margin:0;
-      color:var(--secundario);
-      line-height:1.48;
-      font-size:.92rem;
-    }
-
-    .sr-only{
-      position:absolute!important;
-      width:1px!important;
-      height:1px!important;
-      padding:0!important;
-      margin:-1px!important;
-      overflow:hidden!important;
-      clip:rect(0,0,0,0)!important;
-      white-space:nowrap!important;
-      border:0!important;
-    }
-
-    @media (max-width:900px){
-      .hero{flex-direction:column}
-      .matrix-zone{
-        grid-template-columns:1fr auto 1fr;
-      }
-      .matrix-wrap.result-wrap{
-        grid-column:1 / -1;
-        margin-top:12px;
-      }
-      .matrix-zone .equals{
-        display:none;
-      }
-      .why{grid-template-columns:1fr}
-    }
-
-    @media (max-width:620px){
-      .app{
-        width:min(100% - 18px,1180px);
-        padding-top:18px;
-      }
-      .stage{padding:22px 12px}
-      .topbar{
-        grid-template-columns:1fr;
-      }
-      .progress{justify-content:flex-start}
-      .instruction{
-        grid-template-columns:48px 1fr;
-      }
-      .instruction-number{
-        width:42px;
-        height:42px;
-        border-radius:13px;
-      }
-      .matrix-zone{
-        grid-template-columns:1fr;
-        gap:10px;
-      }
-      .matrix-zone .symbol{
-        transform:rotate(90deg);
-        font-size:1.35rem;
-      }
-      .matrix-zone .equals{
-        display:block;
-      }
-      .matrix{
-        grid-template-columns:repeat(2,64px);
-      }
-      .cell{
-        width:64px;
-        height:54px;
-      }
-      .matrix-wrap.result-wrap{
-        grid-column:auto;
-        margin-top:0;
-      }
-      .pairing{padding:17px 12px}
-      .answer-row{flex-direction:column}
-      .answer-input,.answer-row .btn{width:100%}
-    }
-
-    @media (prefers-reduced-motion:reduce){
-      *,*::before,*::after{
-        animation-duration:.01ms!important;
-        animation-iteration-count:1!important;
-        transition-duration:.01ms!important;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrix Rush · Fila por Columna</title>
+<style>
+  /* ============ PALETA (verde pastel del material LaTeX) ============ */
+  :root{
+    --verde:#D7F0DA;          /* resaltado fila/columna */
+    --verde-borde:#79C48B;
+    --verde-oscuro:#2E7D46;
+    --tinta:#1D1D1F;
+    --gris:#86868B;
+    --fondo:#F5F5F7;
+    --blanco:#FFFFFF;
+    --ambar:#FFD60A;
+    --rojo:#FF453A;
+    --radio:20px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+    background:var(--fondo);color:var(--tinta);
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    overflow-x:hidden;
+  }
+  /* ============ CABECERA / HUD ============ */
+  header{width:100%;max-width:760px;padding:18px 20px 6px;display:flex;justify-content:space-between;align-items:center}
+  .logo{font-size:17px;font-weight:700;letter-spacing:-.3px}
+  .logo span{color:var(--verde-oscuro)}
+  .hud{display:flex;gap:14px;align-items:center}
+  .pill{background:var(--blanco);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600;
+    box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;gap:6px;align-items:center;transition:transform .15s}
+  .pill.bump{transform:scale(1.18)}
+  .pill .lbl{color:var(--gris);font-weight:500;font-size:12px}
+  #comboPill{background:var(--tinta);color:#fff;display:none}
+  #comboPill.on{display:flex;animation:pop .3s}
+  /* barra de progreso del ejercicio */
+  .progress{width:100%;max-width:760px;padding:8px 20px}
+  .progress .track{height:6px;background:#E5E5EA;border-radius:3px;overflow:hidden}
+  .progress .fill{height:100%;width:0%;background:linear-gradient(90deg,var(--verde-borde),var(--verde-oscuro));
+    border-radius:3px;transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+  /* ============ ESCENARIO ============ */
+  main{width:100%;max-width:760px;padding:10px 20px 30px;display:flex;flex-direction:column;align-items:center;gap:18px}
+  .mensaje{min-height:26px;font-size:16px;font-weight:600;color:var(--gris);text-align:center;transition:color .2s}
+  .mensaje.ok{color:var(--verde-oscuro)}
+  .mensaje.err{color:var(--rojo)}
+
+  .escena{background:var(--blanco);border-radius:var(--radio);padding:26px 22px;width:100%;
+    box-shadow:0 4px 24px rgba(0,0,0,.07);display:flex;justify-content:center;align-items:center;
+    gap:14px;flex-wrap:wrap;position:relative}
+  .escena.shake{animation:shake .35s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+  .mat{display:grid;grid-template-columns:repeat(2,58px);grid-template-rows:repeat(2,58px);gap:6px;
+    padding:10px;position:relative;border-left:3px solid var(--tinta);border-right:3px solid var(--tinta);border-radius:8px}
+  .celda{display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;
+    border-radius:12px;position:relative;transition:background .3s,transform .2s,box-shadow .3s;background:transparent}
+  /* barrido verde de fila/columna */
+  .celda.hl{background:var(--verde)}
+  .celda.factor{box-shadow:0 0 0 3px var(--verde-borde) inset;animation:latir 1s ease-in-out infinite}
+  @keyframes latir{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+  .celda.hueco{background:#F2F2F7;color:#C7C7CC;font-size:18px}
+  .celda.lleno{background:var(--verde);color:var(--verde-oscuro);animation:pop .4s}
+  @keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .op{font-size:26px;font-weight:500;color:var(--gris)}
+
+  /* bandeja de la suma */
+  .bandeja{display:flex;align-items:center;gap:8px;min-height:54px;background:#F2F2F7;
+    border-radius:14px;padding:8px 16px;font-size:22px;font-weight:600;color:var(--tinta)}
+  .bandeja .tok{background:var(--blanco);border-radius:10px;padding:4px 12px;box-shadow:0 1px 4px rgba(0,0,0,.08);animation:pop .35s}
+  .bandeja .mas{color:var(--gris)}
+  .bandeja .placeholder{color:#C7C7CC;font-size:15px;font-weight:500}
+
+  /* pregunta y opciones */
+  .pregunta{font-size:20px;font-weight:700;text-align:center;min-height:30px}
+  .pregunta .chip{background:var(--verde);padding:2px 10px;border-radius:8px;color:var(--verde-oscuro)}
+  .opciones{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btnOp{font-size:24px;font-weight:700;min-width:86px;padding:16px 20px;border:none;border-radius:16px;
+    background:var(--blanco);color:var(--tinta);box-shadow:0 2px 10px rgba(0,0,0,.08);cursor:pointer;
+    transition:transform .12s,box-shadow .12s;font-family:inherit}
+  .btnOp:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.12)}
+  .btnOp:active{transform:scale(.94)}
+  .btnOp.mal{background:var(--rojo);color:#fff;animation:shake .35s}
+  .btnOp.bien{background:var(--verde-oscuro);color:#fff;animation:pop .3s}
+  .btnOp:focus-visible{outline:3px solid var(--verde-borde);outline-offset:2px}
+
+  /* temporizador circular */
+  .timerWrap{position:absolute;top:14px;right:14px;width:40px;height:40px}
+  .timerWrap svg{transform:rotate(-90deg)}
+  .timerWrap circle{fill:none;stroke-width:4}
+  .timerWrap .bg{stroke:#E5E5EA}
+  .timerWrap .fg{stroke:var(--verde-oscuro);stroke-linecap:round;transition:stroke-dashoffset .2s linear,stroke .2s}
+
+  /* pantallas */
+  .overlay{position:fixed;inset:0;background:rgba(245,245,247,.96);backdrop-filter:blur(8px);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:50;
+    padding:24px;text-align:center;transition:opacity .35s}
+  .overlay.oculto{opacity:0;pointer-events:none}
+  .overlay h1{font-size:clamp(30px,6vw,44px);font-weight:800;letter-spacing:-1px}
+  .overlay h1 em{font-style:normal;color:var(--verde-oscuro)}
+  .overlay p{max-width:440px;color:var(--gris);font-size:16px;line-height:1.5}
+  .btnGrande{font-size:18px;font-weight:700;padding:16px 44px;border:none;border-radius:999px;
+    background:var(--tinta);color:#fff;cursor:pointer;font-family:inherit;transition:transform .15s}
+  .btnGrande:hover{transform:scale(1.05)}
+  .demo{display:flex;gap:10px;align-items:center;margin:6px 0}
+  .demo .mini{display:grid;grid-template-columns:repeat(2,34px);grid-template-rows:repeat(2,34px);gap:4px;
+    border-left:2px solid var(--tinta);border-right:2px solid var(--tinta);border-radius:6px;padding:5px}
+  .demo .mini div{display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;border-radius:7px}
+  .demo .fila div:nth-child(-n+2){background:var(--verde)}
+  .demo .col div:nth-child(odd){background:var(--verde)}
+  .stats{display:flex;gap:24px;margin-top:6px}
+  .stats .s{display:flex;flex-direction:column;align-items:center}
+  .stats .n{font-size:34px;font-weight:800;color:var(--verde-oscuro)}
+  .stats .t{font-size:13px;color:var(--gris)}
+
+  /* número volador */
+  .volador{position:fixed;font-size:24px;font-weight:800;color:var(--verde-oscuro);z-index:60;pointer-events:none;
+    transition:all .55s cubic-bezier(.5,-.2,.3,1.2)}
+  /* confeti */
+  .confeti{position:fixed;width:10px;height:10px;z-index:70;pointer-events:none;border-radius:2px}
+
+  footer{padding:10px 20px 24px;font-size:12px;color:var(--gris);text-align:center}
+
+  @media (max-width:520px){
+    .mat{grid-template-columns:repeat(2,46px);grid-template-rows:repeat(2,46px)}
+    .celda{font-size:19px}.op{font-size:20px}
+    .btnOp{font-size:20px;min-width:72px;padding:13px 14px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
 </head>
-
 <body>
-  <main class="app">
-    <header class="hero">
-      <div>
-        <div class="eyebrow">Entrenamiento visual de matrices</div>
-        <h1>Fila por columna</h1>
-        <p class="subtitle">
-          Observa el mismo patrón cuatro veces. El color dirige la mirada,
-          el ritmo fija la secuencia y la predicción convierte el procedimiento
-          en una respuesta casi automática.
-        </p>
-      </div>
 
-      <div class="mode-switch" aria-label="Seleccionar modo">
-        <button class="mode-btn active" data-mode="guided">Guiado</button>
-        <button class="mode-btn" data-mode="challenge">Reto</button>
-      </div>
-    </header>
+<!-- ============ PANTALLA DE INICIO ============ -->
+<div class="overlay" id="inicio">
+  <h1>Matrix <em>Rush</em></h1>
+  <p><strong>Fila por columna.</strong> La fila de A y la columna de B se encienden en verde.
+     Multiplica la pareja que late, suma los productos y llena la matriz C antes de que el tiempo se agote.</p>
+  <div class="demo">
+    <div class="mini fila"><div>2</div><div>3</div><div>1</div><div>4</div></div>
+    <span style="font-weight:700">·</span>
+    <div class="mini col"><div>5</div><div>1</div><div>2</div><div>6</div></div>
+    <span style="font-weight:700">⟶ c₁₁ = 2·5 + 3·2</span>
+  </div>
+  <p style="font-size:14px">Cada acierto seguido sube tu <strong>combo ×</strong>. Un error rompe la racha. 🔥</p>
+  <button class="btnGrande" id="btnJugar">Jugar</button>
+</div>
 
-    <section class="panel">
-      <div class="topbar">
-        <div class="mantra">
-          <span class="pulse-dot" aria-hidden="true"></span>
-          <span id="mantra">Mira la fila · Busca la columna · Multiplica · Suma</span>
-        </div>
+<!-- ============ PANTALLA FINAL ============ -->
+<div class="overlay oculto" id="fin">
+  <h1 id="finTitulo">¡Matriz completa!</h1>
+  <p id="finTexto"></p>
+  <div class="stats">
+    <div class="s"><span class="n" id="stPuntos">0</span><span class="t">puntos</span></div>
+    <div class="s"><span class="n" id="stRacha">0</span><span class="t">mejor racha</span></div>
+    <div class="s"><span class="n" id="stPrecision">0%</span><span class="t">precisión</span></div>
+  </div>
+  <button class="btnGrande" id="btnOtra">Otra matriz</button>
+</div>
 
-        <div class="progress" aria-label="Progreso">
-          <span class="current"></span>
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
+<header>
+  <div class="logo">Matrix<span>Rush</span></div>
+  <div class="hud">
+    <div class="pill" id="comboPill">🔥 <span id="comboVal">×2</span></div>
+    <div class="pill"><span class="lbl">Puntos</span> <span id="puntos">0</span></div>
+    <div class="pill"><span class="lbl">Racha</span> <span id="racha">0</span></div>
+  </div>
+</header>
 
-      <div class="stage">
-        <section class="instruction" aria-live="polite">
-          <div class="instruction-number" id="stepNumber">1</div>
-          <div>
-            <h2 id="stepTitle">Primera fila por primera columna</h2>
-            <p id="stepText">
-              Los dos elementos verdes de la fila se emparejan con los dos
-              elementos verdes de la columna.
-            </p>
-          </div>
-        </section>
+<div class="progress"><div class="track"><div class="fill" id="barra"></div></div></div>
 
-        <div class="matrix-zone">
-          <div class="matrix-wrap">
-            <div class="matrix-label">Matriz A</div>
-            <div class="matrix" id="matrixA" aria-label="Matriz A">
-              <div class="cell" data-row="0" data-col="0">2</div>
-              <div class="cell" data-row="0" data-col="1">3</div>
-              <div class="cell" data-row="1" data-col="0">1</div>
-              <div class="cell" data-row="1" data-col="1">4</div>
-            </div>
-          </div>
+<main>
+  <div class="mensaje" id="mensaje">Observa la fila y la columna encendidas</div>
 
-          <div class="symbol" aria-hidden="true">×</div>
+  <div class="escena" id="escena">
+    <div class="timerWrap" aria-hidden="true">
+      <svg width="40" height="40"><circle class="bg" cx="20" cy="20" r="16"></circle>
+      <circle class="fg" id="timerC" cx="20" cy="20" r="16" stroke-dasharray="100.5" stroke-dashoffset="0"></circle></svg>
+    </div>
+    <div class="mat" id="matA"></div>
+    <div class="op">·</div>
+    <div class="mat" id="matB"></div>
+    <div class="op">=</div>
+    <div class="mat" id="matC"></div>
+  </div>
 
-          <div class="matrix-wrap">
-            <div class="matrix-label">Matriz B</div>
-            <div class="matrix" id="matrixB" aria-label="Matriz B">
-              <div class="cell" data-row="0" data-col="0">5</div>
-              <div class="cell" data-row="0" data-col="1">2</div>
-              <div class="cell" data-row="1" data-col="0">6</div>
-              <div class="cell" data-row="1" data-col="1">1</div>
-            </div>
-          </div>
+  <div class="bandeja" id="bandeja"><span class="placeholder">Aquí caen tus productos…</span></div>
 
-          <div class="symbol equals" aria-hidden="true">=</div>
+  <div class="pregunta" id="pregunta"></div>
+  <div class="opciones" id="opciones"></div>
+</main>
 
-          <div class="matrix-wrap result-wrap">
-            <div class="matrix-label">Resultado C</div>
-            <div class="matrix" id="matrixC" aria-label="Matriz resultado">
-              <div class="cell" data-row="0" data-col="0">?</div>
-              <div class="cell" data-row="0" data-col="1">?</div>
-              <div class="cell" data-row="1" data-col="0">?</div>
-              <div class="cell" data-row="1" data-col="1">?</div>
-            </div>
-          </div>
-        </div>
+<footer>Técnica: fila i de A × columna j de B → c<sub>ij</sub>. Repite hasta que salga solo. 💪</footer>
 
-        <section class="pairing" aria-live="polite">
-          <div class="pairing-title">
-            <strong>Emparejamiento visual</strong>
-            <span class="cue" id="cue">fila 1 × columna 1</span>
-          </div>
+<script>
+(function(){
+"use strict";
+/* ==================== ESTADO ==================== */
+const $ = id => document.getElementById(id);
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-          <div class="chips" id="chips"></div>
-          <div class="equation" id="equation"></div>
+let A, B, C;                 // matrices actuales
+let paso = 0;                // 0..3 → c11,c12,c21,c22
+let fase = 0;                // 0: producto1, 1: producto2, 2: suma
+let productos = [];          // productos ya obtenidos del paso actual
+let puntos=0, racha=0, mejorRacha=0, aciertos=0, intentos=0;
+let combo=1;
+let timerId=null, tRestante=0, T_MAX=8;   // segundos por pregunta
+const ORDEN = [[0,0],[0,1],[1,0],[1,1]];  // (i,j) de C en orden de juego
 
-          <div class="challenge" id="challengeBox">
-            <p id="challengePrompt">Calcula el valor antes de comprobarlo.</p>
-            <div class="answer-row">
-              <label class="sr-only" for="answerInput">Respuesta</label>
-              <input
-                id="answerInput"
-                class="answer-input"
-                type="number"
-                inputmode="numeric"
-                autocomplete="off"
-                placeholder="Tu respuesta"
-              />
-              <button class="btn btn-primary" id="checkBtn">Comprobar</button>
-            </div>
-            <div class="feedback" id="feedback" aria-live="polite"></div>
-          </div>
-        </section>
-      </div>
+/* Primer ejercicio de ejemplo (el mismo del material impreso).
+   Luego se generan matrices aleatorias. */
+let primeraVez = true;
+const EJEMPLO = { A:[[2,3],[1,4]], B:[[5,1],[2,6]] };
 
-      <footer class="controls">
-        <button class="btn btn-ghost" id="prevBtn">Anterior</button>
-        <button class="btn btn-secondary" id="repeatBtn">Repetir animación</button>
-        <button class="btn btn-primary" id="nextBtn">Siguiente</button>
-        <button class="btn btn-ghost" id="autoBtn">▶ Recorrido automático</button>
-      </footer>
-    </section>
+/* ==================== SONIDO (WebAudio, sin archivos) ==================== */
+let ctxAudio=null;
+function beep(freq, dur=0.12, tipo="sine", vol=0.18){
+  try{
+    ctxAudio = ctxAudio || new (window.AudioContext||window.webkitAudioContext)();
+    const o=ctxAudio.createOscillator(), g=ctxAudio.createGain();
+    o.type=tipo; o.frequency.value=freq;
+    g.gain.setValueAtTime(vol,ctxAudio.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,ctxAudio.currentTime+dur);
+    o.connect(g).connect(ctxAudio.destination);
+    o.start(); o.stop(ctxAudio.currentTime+dur);
+  }catch(e){}
+}
+const sndOk   =()=>{beep(660,.09);setTimeout(()=>beep(880,.12),70);};
+const sndMal  =()=>beep(160,.25,"sawtooth",.12);
+const sndCelda=()=>{beep(523,.08);setTimeout(()=>beep(784,.1),60);setTimeout(()=>beep(1046,.14),130);};
+const sndFin  =()=>{[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.18),i*110));};
 
-    <section class="why">
-      <article>
-        <strong>1. La mirada recibe una ruta</strong>
-        <p>
-          El resaltado elimina información irrelevante y dirige la atención
-          solo a la fila y la columna necesarias.
-        </p>
-      </article>
-      <article>
-        <strong>2. El patrón siempre se repite</strong>
-        <p>
-          Fila, columna, productos y suma aparecen en el mismo orden para crear
-          una rutina mental estable.
-        </p>
-      </article>
-      <article>
-        <strong>3. La predicción consolida</strong>
-        <p>
-          En modo reto, el estudiante intenta anticipar el resultado antes de
-          verlo, reforzando la recuperación activa.
-        </p>
-      </article>
-    </section>
-  </main>
+/* ==================== CONSTRUCCIÓN DE MATRICES ==================== */
+function nuevaMatriz(){
+  if(primeraVez){ A=EJEMPLO.A.map(r=>[...r]); B=EJEMPLO.B.map(r=>[...r]); primeraVez=false; }
+  else{
+    const r=()=>Math.floor(Math.random()*9)+1;   // 1..9
+    A=[[r(),r()],[r(),r()]]; B=[[r(),r()],[r(),r()]];
+  }
+  C=[[null,null],[null,null]];
+  paso=0; fase=0; productos=[];
+  pintarMatrices();
+  $("barra").style.width="0%";
+  iniciarPaso();
+}
 
-  <script>
-    // ---------------------------------------------------------
-    // DATOS DEL EJEMPLO
-    // Cambia estos arreglos para utilizar otras matrices 2 × 2.
-    // ---------------------------------------------------------
-    const A = [
-      [2, 3],
-      [1, 4]
-    ];
-
-    const B = [
-      [5, 2],
-      [6, 1]
-    ];
-
-    const steps = [
-      { row: 0, col: 0 },
-      { row: 0, col: 1 },
-      { row: 1, col: 0 },
-      { row: 1, col: 1 }
-    ];
-
-    const C = [
-      [
-        A[0][0] * B[0][0] + A[0][1] * B[1][0],
-        A[0][0] * B[0][1] + A[0][1] * B[1][1]
-      ],
-      [
-        A[1][0] * B[0][0] + A[1][1] * B[1][0],
-        A[1][0] * B[0][1] + A[1][1] * B[1][1]
-      ]
-    ];
-
-    const titles = [
-      "Primera fila por primera columna",
-      "Primera fila por segunda columna",
-      "Segunda fila por primera columna",
-      "Segunda fila por segunda columna"
-    ];
-
-    const matrixA = document.querySelectorAll("#matrixA .cell");
-    const matrixB = document.querySelectorAll("#matrixB .cell");
-    const matrixC = document.querySelectorAll("#matrixC .cell");
-    const progressDots = document.querySelectorAll(".progress span");
-
-    const stepNumber = document.getElementById("stepNumber");
-    const stepTitle = document.getElementById("stepTitle");
-    const stepText = document.getElementById("stepText");
-    const cue = document.getElementById("cue");
-    const chips = document.getElementById("chips");
-    const equation = document.getElementById("equation");
-    const challengeBox = document.getElementById("challengeBox");
-    const answerInput = document.getElementById("answerInput");
-    const feedback = document.getElementById("feedback");
-    const checkBtn = document.getElementById("checkBtn");
-
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const repeatBtn = document.getElementById("repeatBtn");
-    const autoBtn = document.getElementById("autoBtn");
-
-    const modeButtons = document.querySelectorAll(".mode-btn");
-
-    let currentStep = 0;
-    let mode = "guided";
-    let autoTimer = null;
-    let revealed = true;
-
-    function cellAt(nodeList, row, col){
-      return [...nodeList].find(cell =>
-        Number(cell.dataset.row) === row &&
-        Number(cell.dataset.col) === col
-      );
+function pintarMatrices(){
+  const mk=(el,M,esC)=>{
+    el.innerHTML="";
+    for(let i=0;i<2;i++)for(let j=0;j<2;j++){
+      const d=document.createElement("div");
+      d.className="celda"; d.id=el.id+"_"+i+j;
+      if(esC){ d.classList.add("hueco"); d.textContent="c"+(i+1)+(j+1);
+        if(M[i][j]!==null){d.className="celda lleno";d.textContent=M[i][j];} }
+      else d.textContent=M[i][j];
+      el.appendChild(d);
     }
+  };
+  mk($("matA"),A,false); mk($("matB"),B,false); mk($("matC"),C,true);
+}
 
-    function clearHighlights(){
-      [...matrixA, ...matrixB, ...matrixC].forEach(cell => {
-        cell.classList.remove(
-          "row-active",
-          "col-active",
-          "result-active",
-          "dimmed"
-        );
-      });
-    }
+/* ==================== RESALTADO fila/columna ==================== */
+function limpiarResaltado(){
+  document.querySelectorAll(".celda").forEach(c=>c.classList.remove("hl","factor"));
+}
+function resaltar(i,j){
+  limpiarResaltado();
+  const orden = reduceMotion ? 0 : 120;
+  // barrido de la fila i de A
+  [0,1].forEach(k=>setTimeout(()=>$("matA_"+i+k).classList.add("hl"), k*orden));
+  // barrido de la columna j de B
+  [0,1].forEach(k=>setTimeout(()=>$("matB_"+k+j).classList.add("hl"), 200+k*orden));
+}
+function latirFactores(i,j,k){ // k: índice del sumando (0 o 1)
+  document.querySelectorAll(".factor").forEach(c=>c.classList.remove("factor"));
+  $("matA_"+i+k).classList.add("factor");
+  $("matB_"+k+j).classList.add("factor");
+}
 
-    function setProgress(){
-      progressDots.forEach((dot, index) => {
-        dot.classList.toggle("done", index < currentStep);
-        dot.classList.toggle("current", index === currentStep);
-      });
-    }
+/* ==================== FLUJO DEL JUEGO ==================== */
+function iniciarPaso(){
+  const [i,j]=ORDEN[paso];
+  fase=0; productos=[];
+  $("bandeja").innerHTML='<span class="placeholder">Aquí caen tus productos…</span>';
+  resaltar(i,j);
+  msg(`Calculemos <b>c${i+1}${j+1}</b>: fila ${i+1} de A × columna ${j+1} de B`,"");
+  setTimeout(()=>preguntar(), reduceMotion?100:600);
+}
 
-    function buildChips(row, col){
-      const a1 = A[row][0];
-      const a2 = A[row][1];
-      const b1 = B[0][col];
-      const b2 = B[1][col];
+function preguntar(){
+  const [i,j]=ORDEN[paso];
+  const ops=$("opciones"); ops.innerHTML="";
+  let correcto, texto;
 
-      chips.innerHTML = `
-        <span class="chip">
-          <span class="a">${a1}</span>
-          <span>×</span>
-          <span class="b">${b1}</span>
-        </span>
-        <span class="plus">+</span>
-        <span class="chip">
-          <span class="a">${a2}</span>
-          <span>×</span>
-          <span class="b">${b2}</span>
-        </span>
-      `;
+  if(fase<2){ // producto k = fase
+    const k=fase, a=A[i][k], b=B[k][j];
+    latirFactores(i,j,k);
+    correcto=a*b;
+    texto=`<span class="chip">${a}</span> × <span class="chip">${b}</span> = ¿?`;
+  } else {    // suma final
+    document.querySelectorAll(".factor").forEach(c=>c.classList.remove("factor"));
+    correcto=productos[0]+productos[1];
+    texto=`<span class="chip">${productos[0]}</span> + <span class="chip">${productos[1]}</span> = ¿?`;
+  }
+  $("pregunta").innerHTML=texto;
 
-      return { a1, a2, b1, b2 };
-    }
+  // tres opciones (correcta + 2 distractores plausibles)
+  const set=new Set([correcto]);
+  while(set.size<3){
+    let d=correcto+[-2,-1,1,2,10,-10,correcto%10||3][Math.floor(Math.random()*7)];
+    if(d>0&&d!==correcto) set.add(d);
+  }
+  [...set].sort(()=>Math.random()-.5).forEach(v=>{
+    const b=document.createElement("button");
+    b.className="btnOp"; b.textContent=v;
+    b.onclick=()=>responder(b,v,correcto);
+    ops.appendChild(b);
+  });
+  iniciarTimer();
+}
 
-    function showEquation(values, showAnswer){
-      const { a1, a2, b1, b2 } = values;
-      const partial1 = a1 * b1;
-      const partial2 = a2 * b2;
-      const result = partial1 + partial2;
+function responder(btn,v,correcto){
+  intentos++;
+  if(v===correcto){
+    pararTimer(); aciertos++;
+    racha++; mejorRacha=Math.max(mejorRacha,racha);
+    combo = racha>=9?4 : racha>=6?3 : racha>=3?2 : 1;
+    const bonusT = Math.ceil(tRestante); // premia velocidad
+    puntos += (10+bonusT)*combo;
+    actualizarHUD(true);
+    btn.classList.add("bien"); sndOk();
+    volarNumero(btn, v);
+    setTimeout(()=>avanzar(v), reduceMotion?150:600);
+  }else{
+    fallo(btn);
+  }
+}
 
-      equation.innerHTML = showAnswer
-        ? `${a1} × ${b1} + ${a2} × ${b2}
-           = ${partial1} + ${partial2}
-           = <span class="answer">${result}</span>`
-        : `${a1} × ${b1} + ${a2} × ${b2} = ?`;
-    }
+function fallo(btn){
+  racha=0; combo=1; actualizarHUD(false);
+  if(btn){btn.classList.add("mal"); setTimeout(()=>btn.classList.remove("mal"),400);}
+  $("escena").classList.add("shake");
+  setTimeout(()=>$("escena").classList.remove("shake"),400);
+  sndMal();
+  msg("Ups, la racha se rompió. ¡Sigue!","err");
+}
 
-    function revealResultCell(row, col, value){
-      const resultCell = cellAt(matrixC, row, col);
-      resultCell.textContent = value;
-      resultCell.classList.add("result-active");
-    }
+function avanzar(valor){
+  const [i,j]=ORDEN[paso];
+  if(fase<2){
+    productos.push(valor);
+    pintarBandeja();
+    fase++;
+    if(fase===2) msg("Ahora suma tus productos","ok");
+    preguntar();
+  }else{
+    // c_ij completo
+    C[i][j]=valor;
+    const celda=$("matC_"+i+j);
+    celda.className="celda lleno"; celda.textContent=valor;
+    sndCelda(); confeti(celda, 14);
+    $("barra").style.width=((paso+1)/4*100)+"%";
+    paso++;
+    limpiarResaltado();
+    if(paso<4){ msg("¡Coeficiente listo! 🎯","ok"); setTimeout(iniciarPaso, reduceMotion?200:900); }
+    else terminar();
+  }
+}
 
-    function renderStep(){
-      stopAuto(false);
-      clearHighlights();
+function pintarBandeja(){
+  const b=$("bandeja"); b.innerHTML="";
+  productos.forEach((p,idx)=>{
+    if(idx>0){const m=document.createElement("span");m.className="mas";m.textContent="+";b.appendChild(m);}
+    const t=document.createElement("span");t.className="tok";t.textContent=p;b.appendChild(t);
+  });
+}
 
-      const { row, col } = steps[currentStep];
-      const result = C[row][col];
+/* ==================== TIMER ==================== */
+function iniciarTimer(){
+  pararTimer(); tRestante=T_MAX;
+  const c=$("timerC"), TOTAL=100.5;
+  c.style.strokeDashoffset=0; c.style.stroke="var(--verde-oscuro)";
+  timerId=setInterval(()=>{
+    tRestante-=0.1;
+    c.style.strokeDashoffset=TOTAL*(1-tRestante/T_MAX);
+    if(tRestante<=3) c.style.stroke="var(--rojo)";
+    if(tRestante<=0){ pararTimer(); fallo(null); preguntar(); }
+  },100);
+}
+function pararTimer(){ if(timerId){clearInterval(timerId);timerId=null;} }
 
-      stepNumber.textContent = currentStep + 1;
-      stepTitle.textContent = titles[currentStep];
-      stepText.textContent =
-        `La fila ${row + 1} de A se combina con la columna ${col + 1} de B. ` +
-        `Cada posición se empareja con la que está a su altura.`;
+/* ==================== HUD y mensajes ==================== */
+function actualizarHUD(bump){
+  $("puntos").textContent=puntos;
+  $("racha").textContent=racha;
+  const cp=$("comboPill");
+  if(combo>1){cp.classList.add("on");$("comboVal").textContent="×"+combo;}
+  else cp.classList.remove("on");
+  if(bump){const p=$("puntos").parentElement;p.classList.add("bump");setTimeout(()=>p.classList.remove("bump"),160);}
+}
+function msg(html,tipo){
+  const m=$("mensaje"); m.innerHTML=html;
+  m.className="mensaje"+(tipo?" "+tipo:"");
+}
 
-      cue.textContent = `fila ${row + 1} × columna ${col + 1}`;
+/* ==================== EFECTOS ==================== */
+function volarNumero(desde, valor){
+  if(reduceMotion) return;
+  const [i,j]=ORDEN[paso];
+  const destino = fase<2 ? $("bandeja") : $("matC_"+i+j);
+  const r1=desde.getBoundingClientRect(), r2=destino.getBoundingClientRect();
+  const v=document.createElement("div");
+  v.className="volador"; v.textContent=valor;
+  v.style.left=r1.left+r1.width/2+"px"; v.style.top=r1.top+"px";
+  document.body.appendChild(v);
+  requestAnimationFrame(()=>{
+    v.style.left=r2.left+r2.width/2+"px";
+    v.style.top=r2.top+r2.height/4+"px";
+    v.style.transform="scale(.6)"; v.style.opacity=".2";
+  });
+  setTimeout(()=>v.remove(),600);
+}
+function confeti(origen,n){
+  if(reduceMotion) return;
+  const r=origen.getBoundingClientRect();
+  const colores=["#79C48B","#2E7D46","#FFD60A","#FF9F0A","#64D2FF"];
+  for(let k=0;k<n;k++){
+    const c=document.createElement("div");
+    c.className="confeti";
+    c.style.background=colores[k%colores.length];
+    c.style.left=r.left+r.width/2+"px"; c.style.top=r.top+r.height/2+"px";
+    document.body.appendChild(c);
+    const ang=Math.random()*2*Math.PI, vel=60+Math.random()*90;
+    c.animate([
+      {transform:"translate(0,0) rotate(0deg)",opacity:1},
+      {transform:`translate(${Math.cos(ang)*vel}px,${Math.sin(ang)*vel+90}px) rotate(${Math.random()*540}deg)`,opacity:0}
+    ],{duration:700+Math.random()*400,easing:"cubic-bezier(.2,.6,.4,1)"});
+    setTimeout(()=>c.remove(),1100);
+  }
+}
 
-      matrixA.forEach(cell => {
-        const active = Number(cell.dataset.row) === row;
-        cell.classList.toggle("row-active", active);
-        cell.classList.toggle("dimmed", !active);
-      });
+/* ==================== FIN DE EJERCICIO ==================== */
+function terminar(){
+  pararTimer(); sndFin();
+  confeti($("matC"),36);
+  const prec = intentos? Math.round(aciertos/intentos*100):100;
+  $("stPuntos").textContent=puntos;
+  $("stRacha").textContent=mejorRacha;
+  $("stPrecision").textContent=prec+"%";
+  $("finTexto").textContent = prec===100
+    ? "Perfecto: fila por columna ya vive en tu cabeza. ¿Otra ronda para afianzarla?"
+    : "Cada matriz que completas graba más la técnica. ¡Vamos por otra!";
+  setTimeout(()=>$("fin").classList.remove("oculto"), reduceMotion?100:900);
+}
 
-      matrixB.forEach(cell => {
-        const active = Number(cell.dataset.col) === col;
-        cell.classList.toggle("col-active", active);
-        cell.classList.toggle("dimmed", !active);
-      });
-
-      matrixC.forEach(cell => {
-        const r = Number(cell.dataset.row);
-        const c = Number(cell.dataset.col);
-        const alreadySolved =
-          steps.findIndex(step => step.row === r && step.col === c) < currentStep;
-
-        cell.textContent = alreadySolved ? C[r][c] : "?";
-      });
-
-      const values = buildChips(row, col);
-
-      revealed = mode === "guided";
-
-      if(mode === "guided"){
-        challengeBox.classList.remove("visible");
-        showEquation(values, true);
-        revealResultCell(row, col, result);
-      }else{
-        challengeBox.classList.add("visible");
-        showEquation(values, false);
-        answerInput.value = "";
-        answerInput.classList.remove("correct", "wrong");
-        feedback.textContent = "";
-        setTimeout(() => answerInput.focus(), 50);
-      }
-
-      prevBtn.disabled = currentStep === 0;
-      nextBtn.textContent = currentStep === steps.length - 1
-        ? "Reiniciar"
-        : "Siguiente";
-
-      setProgress();
-    }
-
-    function checkAnswer(){
-      const { row, col } = steps[currentStep];
-      const expected = C[row][col];
-      const entered = Number(answerInput.value);
-
-      answerInput.classList.remove("correct", "wrong");
-
-      if(answerInput.value.trim() === ""){
-        feedback.textContent = "Escribe primero un resultado.";
-        answerInput.classList.add("wrong");
-        return;
-      }
-
-      if(entered === expected){
-        answerInput.classList.add("correct");
-        feedback.textContent = "Correcto. Tu mente siguió la ruta fila → columna.";
-        const values = buildChips(row, col);
-        showEquation(values, true);
-        revealResultCell(row, col, expected);
-        revealed = true;
-      }else{
-        answerInput.classList.add("wrong");
-        feedback.textContent = "Revisa los dos productos y luego súmalos.";
-      }
-    }
-
-    function replayAnimation(){
-      const { row, col } = steps[currentStep];
-      clearHighlights();
-
-      setTimeout(() => {
-        matrixA.forEach(cell => {
-          const active = Number(cell.dataset.row) === row;
-          cell.classList.toggle("row-active", active);
-          cell.classList.toggle("dimmed", !active);
-        });
-      }, 120);
-
-      setTimeout(() => {
-        matrixB.forEach(cell => {
-          const active = Number(cell.dataset.col) === col;
-          cell.classList.toggle("col-active", active);
-          cell.classList.toggle("dimmed", !active);
-        });
-      }, 520);
-
-      setTimeout(() => {
-        if(mode === "guided" || revealed){
-          revealResultCell(row, col, C[row][col]);
-        }
-      }, 900);
-    }
-
-    function nextStep(){
-      if(currentStep === steps.length - 1){
-        currentStep = 0;
-      }else{
-        currentStep += 1;
-      }
-      renderStep();
-    }
-
-    function previousStep(){
-      if(currentStep > 0){
-        currentStep -= 1;
-        renderStep();
-      }
-    }
-
-    function startAuto(){
-      if(autoTimer){
-        stopAuto();
-        return;
-      }
-
-      autoBtn.textContent = "■ Detener recorrido";
-      autoTimer = setInterval(() => {
-        currentStep = (currentStep + 1) % steps.length;
-        renderStep();
-        autoBtn.textContent = "■ Detener recorrido";
-      }, 2600);
-    }
-
-    function stopAuto(updateText = true){
-      if(autoTimer){
-        clearInterval(autoTimer);
-        autoTimer = null;
-      }
-      if(updateText){
-        autoBtn.textContent = "▶ Recorrido automático";
-      }
-    }
-
-    modeButtons.forEach(button => {
-      button.addEventListener("click", () => {
-        modeButtons.forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-        mode = button.dataset.mode;
-        renderStep();
-      });
-    });
-
-    prevBtn.addEventListener("click", previousStep);
-    nextBtn.addEventListener("click", nextStep);
-    repeatBtn.addEventListener("click", replayAnimation);
-    autoBtn.addEventListener("click", startAuto);
-    checkBtn.addEventListener("click", checkAnswer);
-
-    answerInput.addEventListener("keydown", event => {
-      if(event.key === "Enter") checkAnswer();
-    });
-
-    renderStep();
-    replayAnimation();
-  </script>
+/* ==================== BOTONES ==================== */
+$("btnJugar").onclick=()=>{ $("inicio").classList.add("oculto"); nuevaMatriz(); };
+$("btnOtra").onclick =()=>{ $("fin").classList.add("oculto"); nuevaMatriz(); };
+})();
+</script>
 </body>
 </html>
